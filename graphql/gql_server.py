@@ -1,7 +1,6 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
-from graphene import ObjectType, String, Int, List, Schema, Field
-
+from graphene import ObjectType, String, Int, List, Schema, Field, Mutation
 
 class Estudiante(ObjectType):
     id = Int()
@@ -18,8 +17,16 @@ estudiantes = [
 
 class Query(ObjectType):
     estudiantes = List(Estudiante)
-  #  estudiante = Field(Estudiante, id=Int())
-
+    estudiante_por_id = Field(Estudiante, id=Int())
+    estudiante_nombre_apellido = Field(Estudiante, nombre=String(), apellido=String())
+    estudiante_carrera= Field(Estudiante, carrera=String())
+  #  estudiante = Field(Estudiante, id=Int())    
+    def resolve_estudiante_nombre_apellido(root, info, nombre, apellido):
+        for estudiante in estudiantes:
+            if estudiantes.nombre == nombre and estudiantes.apellido == apellido:
+                return estudiante
+        return None
+    
     def resolve_estudiantes(root, info):
         return estudiantes
 
@@ -28,9 +35,57 @@ class Query(ObjectType):
      #       if estudiante.id == id:
      #           return estudiante
       #  return None
+      
+    def resolve_estudiante_por_id(root, info, id):
+        for estudiante in estudiantes:
+            if estudiante.id == id:
+                return estudiante
+        return None
+#las mutaciones es alterar el estado de algo
+class CrearEstudiante(Mutation):
+    class Arguments:
+        nombre = String()
+        apellido = String()
+        carrera = String()
+        
+    estudiante = Field(Estudiante)
+    
+    def mutate(root, info, nombre, apellido, carrera):
+        nuevo_estudiante = Estudiante(
+            id=len(estudiantes) + 1, 
+            nombre=nombre, 
+            apellido=apellido, 
+            carrera=carrera
+        )
+        estudiantes.append(nuevo_estudiante)
 
+        return CrearEstudiante(estudiante=nuevo_estudiante)
+class CrearEstudianteArquitectura(Mutation):
+    class Arguments:
+        nombre = String()
+        apellido = String()
+        carrera = String()
+        
+    estudiante = Field(Estudiante)
+    
+    def mutate(root, info, nombre, apellido):
+        nuevo_estudiante = Estudiante(
+            id=len(estudiantes) + 1, 
+            nombre=nombre, 
+            apellido=apellido, 
+            carrera="Arquitectura"
+        )
+        estudiantes.append(nuevo_estudiante)
 
-schema = Schema(query=Query)
+        return CrearEstudianteArquitectura(estudiante=nuevo_estudiante)
+    
+class Mutations(ObjectType):
+    crear_estudiante = CrearEstudiante.Field()
+    crear_estudiantea = CrearEstudianteArquitectura.Field()
+    
+
+    
+schema = Schema(query=Query, mutation=Mutations)
 
 
 class GraphQLRequestHandler(BaseHTTPRequestHandler):
