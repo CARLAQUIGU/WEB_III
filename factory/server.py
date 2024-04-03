@@ -27,7 +27,14 @@ class Drone(DeliveryVehicle):
 class Scout(DeliveryVehicle):
     def __init__(self):
         super().__init__(capacity=5)
+        
+class DeliveryService:
+    def __init__(self):
+        self.delivery_factory = DeliveryFactory()
 
+    def process_delivery(self, vehicle_type):
+        delivery_vehicle = self.delivery_factory.create_delivery_vehicle(vehicle_type)
+        return delivery_vehicle.deliver()
 
 class DeliveryFactory:
     def create_delivery_vehicle(self, vehicle_type):

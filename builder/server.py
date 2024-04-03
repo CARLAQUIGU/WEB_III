@@ -41,7 +41,7 @@ class Pizzeria:
         return self.builder.get_pizza()
 
 # Manejador de solicitudes HTTP
-class PizzaHandler(BaseHTTPRequestHandler):
+class PizzaHandler(BaseHTTPRequestHandler): #solo las rutas y las respuestas , aqui esta instancio=ando elbiulder y creando la pizza
     def do_POST(self):
         if self.path == '/pizza':
             content_length = int(self.headers['Content-Length'])
