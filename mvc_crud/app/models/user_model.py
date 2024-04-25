@@ -23,3 +23,13 @@ class User(db.Model):
     @staticmethod
     def get_all():
         return User.query.all()
+    @staticmethod
+    def get_by_id(id):
+        return User.query.get(id)
+
+    def update(self):
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
